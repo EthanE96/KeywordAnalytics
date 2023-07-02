@@ -1,70 +1,43 @@
-import eel
-import shutil
 import os
-from openpyxl import load_workbook
-from openpyxl import Workbook
+import glob
+from openpyxl import load_workbook, Workbook
+from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.table import Table, TableStyleInfo
 
-eel.init("web")
+# Path to the folder containing the Excel files
+folder_path = '/Users/ethan/Library/CloudStorage/OneDrive-Personal/CampusArtistry/Product Creation/Erank Data'
 
-@eel.expose
-def directory_path():
-    
+# Get the most recent Excel file from the folder
+excel_files = glob.glob(os.path.join(folder_path, '*.xlsx'))
+most_recent_file = max(excel_files, key=os.path.getctime)
 
+# Load the most recent Excel file
+workbook = load_workbook(most_recent_file)
 
-def synthesize_activate():
+# Get the first sheet of the workbook
+ws = workbook.active
 
-    #Declare Varible
-    myTimesheets = []
+# Create a new sheet within the same workbook
+ns = workbook.create_sheet(title='Data')
 
-    #Look in Folder
-    directory = r'#input'
-    for filename in os.listdir(directory):
-        if filename.endswith(".xlsx"):
-            #Adds Excel Files to List
-            myTimesheets.append(filename)
+# Copy the data from the source sheet to the new sheet
+for row in ws.iter_rows(values_only=True):
+    ns.append(row)
 
-    print(myTimesheets)
+# Get the range of cells containing the copied data
+num_rows = ns.max_row
+num_columns = ns.max_column
+start_cell = ns.cell(row=1, column=1)
+end_cell = ns.cell(row=num_rows, column=num_columns)
 
+# Create a table from the range of cells
+table = Table(displayName="Table1", ref=f"{start_cell.coordinate}:{end_cell.coordinate}")
 
-    #Load Workbooks
-    workbook1 = load_workbook(filename="EthanEdwardsTime.xlsx", data_only=True)
-    workbook2 = load_workbook(filename="EvanCampbellTime.xlsx", data_only=True)
-    sheet1 = workbook1.active
-    sheet2 = workbook2.active
+# Apply table style
+table.tableStyleInfo = TableStyleInfo(name="TableStyleMedium9")
 
-    #Manipulate Data
+# Add the table to the new sheet
+ns.add_table(table)
 
-   #Create Workbook and Cells
-    finalWorkbook = Workbook()
-    finalSheet = finalWorkbook.active
-
-    #Headers
-    finalSheet["A1"] = "Staff Member"
-    finalSheet["B1"] = "Total Mileage"
-    finalSheet["C1"] = "Mileage Value"
-
-    #Names
-    finalSheet["A2"] = sheet1["A2"].value
-    finalSheet["A3"] = sheet2["A2"].value
-
-    #Sum Miles
-    finalSheet["B2"] = sheet1["N5"].value
-    finalSheet["B3"] = sheet2["N5"].value
-
-    #Sum Value
-    finalSheet["C2"] = sheet1["O5"].value
-    finalSheet["C3"] = sheet2["O5"].value
-    
-    finalWorkbook.save(filename="Time_Summary.xlsx")
-
-    #Move File to Desktop
-    src_path = r'C:\Users\Ethan\OneDrive - The University of Alabama\Code\Capstone\Python_Ex4\Time_Summary.xlsx'
-    dst_path = r'C:\Users\Ethan\Desktop'
-    shutil.move(src_path, dst_path)
-
-    print("Synthesize")
-    return "Complete, file on desktop"
-
-
-# Start the index.html file
-eel.start("index.html", size=(500, 500), mode='chrome')
+# Save the modified workbook
+workbook.save(most_recent_file)
