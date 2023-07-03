@@ -15,13 +15,13 @@ excel_files = glob.glob(os.path.join(folder_path, '*.xlsx'))
 most_recent_file = max(excel_files, key=os.path.getctime)
 
 # Load the most recent Excel file
-workbook = load_workbook(most_recent_file)
+wb = load_workbook(most_recent_file)
 
 # Get the first sheet of the workbook
-ws = workbook.active
+ws = wb.active
 
 # Create a new sheet within the same workbook
-ns = workbook.create_sheet(title='Data')
+ns = wb.create_sheet(title='Data')
 
 # Copy the data from the source sheet to the new sheet
 for row in ws.iter_rows(values_only=True):
@@ -43,22 +43,30 @@ table.tableStyleInfo = TableStyleInfo(name="TableStyleMedium8")
 # Add the table to the new sheet
 ns.add_table(table)
 
-# Hide columns 1 and 2
-ns.column_dimensions["A"].hidden = True
-ns.column_dimensions["B"].hidden = True
-ns.column_dimensions["Y"].hidden = True
+# Delete columns 1 and 2
+ns.delete_cols(idx=1, amount=2)
 
-# Insert new column
-ns.insert_cols(idx=9)
-column_name = "Comp to Search"
-column_letter = get_column_letter(9)
-ns[f"{column_letter}1"] = column_name
+# Insert new columns
+ns.insert_cols(idx=9, amount=2)
+column_name_1 = "Comp to Search"
+column_name_2 = "Search Weighted"
+column_letter_1 = get_column_letter(9)
+column_letter_2 = get_column_letter(10)
+ns[f"{column_letter_1}1"] = column_name_1
+ns[f"{column_letter_2}1"] = column_name_2
 
-# Fill column I with this formula (E1/H1)
+
+# Fill column Comp to Search with this formula (F2/C2)
 for row in range(2, num_rows + 1):
     cell = ns[f"I{row}"]
-    cell.value = f"=E{row}/H{row}"
+    cell.value = f"=F{row}/C{row}"
 
+# Fill column J with this formula (I2/C2)
+for row in range(2, num_rows + 1):
+    cell = ns[f"J{row}"]
+    cell.value = f"=I{row}/C{row}"
+    cell.number_format = "0.00"
+    
 # Define the minimum, midpoint, and maximum values
 minimum_value = 0
 midpoint_value = 5
@@ -87,5 +95,18 @@ color_scale_rule = ColorScaleRule(
 # Apply the color scale rule to the range of cells
 ns.conditional_formatting.add(range_string, color_scale_rule)
 
+# # Sort column I in ascending order
+# ns.sort_range(start_cell=f"I2", end_cell=f"I{num_rows}", ascending=True)
+ERROR ERROR ERROR
+
+# Format the column width of the table
+for column in ns.columns:
+    column_letter = column[0].column_letter
+    ns.column_dimensions[column_letter].width = 12
+
+# COPY OVER TO ANLYSIS SHEET
+
 # Save the copied workbook
-workbook.save(most_recent_file)
+wb.save(most_recent_file)
+
+print(Workbook.__name__)
