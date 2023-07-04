@@ -95,18 +95,12 @@ color_scale_rule = ColorScaleRule(
 # Apply the color scale rule to the range of cells
 ns.conditional_formatting.add(range_string, color_scale_rule)
 
-# # Sort column I in ascending order
-# ns.sort_range(start_cell=f"I2", end_cell=f"I{num_rows}", ascending=True)
-ERROR ERROR ERROR
-
 # Format the column width of the table
 for column in ns.columns:
     column_letter = column[0].column_letter
     ns.column_dimensions[column_letter].width = 12
 
-# COPY OVER TO ANLYSIS SHEET
-
 # Save the copied workbook
 wb.save(most_recent_file)
 
-print(Workbook.__name__)
+print(most_recent_file.title)
