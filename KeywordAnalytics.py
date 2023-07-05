@@ -15,8 +15,11 @@ folder_path = '/Users/ethan/Library/CloudStorage/OneDrive-Personal/CampusArtistr
 excel_files = glob.glob(os.path.join(folder_path, '*.xlsx'))
 most_recent_file = max(excel_files, key=os.path.getctime)
 
-# Get the file name without the extension
-file_name_without_extension = os.path.splitext(most_recent_file)[0]
+# Extract the base name from the file path
+file_name = os.path.basename(most_recent_file)
+
+# Remove the extension from the file name
+file_name_without_extension = os.path.splitext(file_name)[0]
 
 # Load the most recent Excel file
 wb = load_workbook(most_recent_file)
@@ -26,7 +29,7 @@ ws = wb.active
 
 #Check if complete
 if file_name_without_extension in wb.sheetnames:
-    sys.exit("Sheet named " + file_name_without_extension + " already exists. Script ended. Workbook: " + most_recent_file)
+    sys.exit("Sheet named: " + file_name_without_extension + " already exists. Script ended. Workbook: " + most_recent_file)
 
 # Create a new sheet within the same workbook
 ns = wb.create_sheet(title=file_name_without_extension)
@@ -111,4 +114,4 @@ for column in ns.columns:
 # Save the copied workbook
 wb.save(most_recent_file)
 
-print("done")
+print("Sheet named " + file_name_without_extension + " complete")
