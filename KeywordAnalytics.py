@@ -1,5 +1,6 @@
 import os
 import glob
+import sys
 from openpyxl import load_workbook, Workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.table import Table, TableStyleInfo
@@ -14,14 +15,21 @@ folder_path = '/Users/ethan/Library/CloudStorage/OneDrive-Personal/CampusArtistr
 excel_files = glob.glob(os.path.join(folder_path, '*.xlsx'))
 most_recent_file = max(excel_files, key=os.path.getctime)
 
+# Get the file name without the extension
+file_name_without_extension = os.path.splitext(most_recent_file)[0]
+
 # Load the most recent Excel file
 wb = load_workbook(most_recent_file)
 
 # Get the first sheet of the workbook
 ws = wb.active
 
+#Check if complete
+if file_name_without_extension in wb.sheetnames:
+    sys.exit("Sheet named " + file_name_without_extension + " already exists. Script ended. Workbook: " + most_recent_file)
+
 # Create a new sheet within the same workbook
-ns = wb.create_sheet(title='Data')
+ns = wb.create_sheet(title=file_name_without_extension)
 
 # Copy the data from the source sheet to the new sheet
 for row in ws.iter_rows(values_only=True):
@@ -103,4 +111,4 @@ for column in ns.columns:
 # Save the copied workbook
 wb.save(most_recent_file)
 
-print(most_recent_file.title)
+print("done")
