@@ -9,7 +9,7 @@ from openpyxl.styles import Color
 
 
 # Path to the folder containing the Excel files
-folder_path = '/Users/ethan/Library/CloudStorage/OneDrive-Personal/CampusArtistry/Product Creation/Erank Data'
+folder_path = '/Users/ethan/Library/CloudStorage/OneDrive-Personal/Ecomm/CampusArtistry/Product Creation/Erank Data'
 
 # Get the most recent Excel file from the folder
 excel_files = glob.glob(os.path.join(folder_path, '*.xlsx'))
@@ -27,9 +27,10 @@ wb = load_workbook(most_recent_file)
 # Get the first sheet of the workbook
 ws = wb.active
 
-#Check if complete
+# Check if complete
 if file_name_without_extension in wb.sheetnames:
-    sys.exit("Sheet named: " + file_name_without_extension + " already exists. Script ended. Workbook: " + most_recent_file)
+    sys.exit("Sheet named: " + file_name_without_extension +
+             " already exists. Script ended. Workbook: " + most_recent_file)
 
 # Create a new sheet within the same workbook
 ns = wb.create_sheet(title=file_name_without_extension)
@@ -77,7 +78,7 @@ for row in range(2, num_rows + 1):
     cell = ns[f"J{row}"]
     cell.value = f"=I{row}/C{row}"
     cell.number_format = "0.00"
-    
+
 # Define the minimum, midpoint, and maximum values
 minimum_value = 0
 midpoint_value = 5
