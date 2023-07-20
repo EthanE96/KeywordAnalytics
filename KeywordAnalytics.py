@@ -9,7 +9,7 @@ from openpyxl.styles import Color
 
 
 # Path to the folder containing the Excel files
-folder_path = '/Users/ethan/Library/CloudStorage/OneDrive-Personal/Ecomm/CampusArtistry/Product Creation/Erank Data'
+folder_path = '/Users/ethan/Library/CloudStorage/OneDrive-Personal/Ecomm/CampusArtistry/Product Analytics/Erank Data'
 
 # Get the most recent Excel file from the folder
 excel_files = glob.glob(os.path.join(folder_path, '*.xlsx'))
